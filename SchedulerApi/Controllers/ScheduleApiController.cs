@@ -61,5 +61,40 @@ namespace SchedulerApi.Controllers
 
             return CreatedAtRoute("GetSchedule", new { id = schedule.Id }, schedule);
         }
+        
+        [HttpDelete("{id:int}",Name ="DeleteSchedule")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public ActionResult DeleteSchedule(int id)
+        {
+            if(id== 0)
+            {
+                return BadRequest();
+            }
+            var schedule = _db.Schedules.FirstOrDefault(u => u.Id == id);
+            _db.Schedules.Remove(schedule);
+            _db.SaveChanges();
+            return NoContent();
+        }
+        [HttpPut("{id:int}",Name ="UpdateSchedule")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        
+        public ActionResult<ScheduleUpdateDTO>UpdateSchedule(int id,[FromBody]ScheduleUpdateDTO updateDTO)
+        {
+            if(id!=updateDTO.Id)
+            {
+                return BadRequest();
+            }
+            Schedule schedule = new Schedule()
+            {
+                Id = updateDTO.Id,
+                Name = updateDTO.Name,
+                AppointmentDate = updateDTO.AppointmentDate,
+            };
+            _db.Schedules.Update(schedule);
+            _db.SaveChanges();
+           return NoContent();
+        }
     }
 }
